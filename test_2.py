@@ -14,7 +14,7 @@ async def process_start_command(message: Message):
 
 @dp.message()
 async def answer_message(message:Message):
-    await message.answer(text="you so pee ty with your text: " + message.text)
+    await message.answer(text="you so peez ty with your text: " + message.text)
 
 if __name__ == '__main__':
     dp.run_polling(bot)
