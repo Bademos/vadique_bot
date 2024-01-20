@@ -1,0 +1,4 @@
+aiogram==3.3.0
+beautifulsoup4==4.12.3
+hyper==0.7.0
+Requests==2.31.0
