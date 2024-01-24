@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 
 import requests
+
 import collections.abc
 #hyper needs the four following aliases to be done manually.
 collections.Iterable = collections.abc.Iterable
