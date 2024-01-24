@@ -10,19 +10,20 @@ dp = Dispatcher()
 
 ATTEMPTS = 5
 
-user = {'in_game':False,
-        'secret_number':None,
-        'attempts':None,
-        'total_games':0,
-        'wins':0}
 
-
+users = {}
 def get_random_number() -> int:
     return random.randint(1,100)
 
 @dp.message(CommandStart())
 async def process_start_command(message:Message):
     await message.answer("Hello, dear!\nWould you like to play?")
+    if message.from_user.id not in users:
+        users[message.from_user.id] = {'in_game':False,
+        'secret_number':None,
+        'attempts':None,
+        'total_games':0,
+        'wins':0}
 
 
 @dp.message(Command(commands='help'))
@@ -40,15 +41,15 @@ async def help_command(message:Message):
 async def stat_command(message:Message):
     await message.answer(
         f'Attempts: {ATTEMPTS}\n'
-        f'Total games: {user["total_games"]}\n'
-        f'Wins: {user["wins"]}'
+        f'Total games: {users[message.from_user.id]["total_games"]}\n'
+        f'Wins: {users[message.from_user.id]["wins"]}'
     )
 
 
 @dp.message(Command(commands="cancel"))
 async def cancel_command(message:Message):
-    if user['in_game'] :
-        user['in_game'] = False
+    if users[message.from_user.id]['in_game'] :
+        users[message.from_user.id]['in_game'] = False
         await message.answer(
             f'The game have been canceled'
         )
@@ -60,10 +61,10 @@ async def cancel_command(message:Message):
 
 @dp.message(F.text.lower().in_(['yes', 'y', 'да', 'давай']))
 async def start_game(message:Message):
-    if not user['in_game']:
-        user['in_game'] = True
-        user['secret_number'] = get_random_number()
-        user['attempts'] = ATTEMPTS
+    if not users[message.from_user.id]['in_game']:
+        users[message.from_user.id]['in_game'] = True
+        users[message.from_user.id]['secret_number'] = get_random_number()
+        users[message.from_user.id]['attempts'] = ATTEMPTS
 
         await message.answer(
             f'Game is begining!\n'
@@ -81,7 +82,7 @@ async def start_game(message:Message):
     
 @dp.message(F.text.lower().in_(["no", "нет", "не хочу"]))
 async def refuse_command(message:Message):
-    if not  user['in_game']:
+    if not users[message.from_user.id]['in_game']:
         await message.answer(
             f'Ok. Press /start if you change your mind'
         )
@@ -91,34 +92,34 @@ async def refuse_command(message:Message):
         )
 @dp.message(lambda x: x.text and x.text.isdigit() and 1 <= int(x.text) <= 100)
 async def the_game(message:Message):
-    if user["in_game"]:
-        if int(message.text) == int(user["secret_number"]):
-            user["wins"] += 1
-            user["total_games"] += 1
-            user["in_game"] = False
+    if users[message.from_user.id]["in_game"]:
+        if int(message.text) == int(users[message.from_user.id]["secret_number"]):
+            users[message.from_user.id]["wins"] += 1
+            users[message.from_user.id]["total_games"] += 1
+            users[message.from_user.id]["in_game"] = False
             await message.answer(
                 f'You are win \n'
-                f'The number was {user["secret_number"]}\n'
+                f'The number was {users[message.from_user.id]["secret_number"]}\n'
                 f'Do you wanna play the game again?'
             )
-        elif int(message.text) > int(user["secret_number"]):
-            user["attempts"] -= 1
+        elif int(message.text) > int(users[message.from_user.id]["secret_number"]):
+            users[message.from_user.id]["attempts"] -= 1
             await message.answer(
                 f'Your number is bigger tnen the NUMBER \n'
                 f'Please try again'
                 )
-        elif int(message.text) < int(user["secret_number"]):
-            user["attempts"] -= 1
+        elif int(message.text) < int(users[message.from_user.id]["secret_number"]):
+            users[message.from_user.id]["attempts"] -= 1
             await message.answer(
                 f'Your number is too less \n'
                 f'Please try again'
                 )
             
-        if user["attempts"] <= 0:
-            user["in_game"] = False
+        if users[message.from_user.id]["attempts"] <= 0:
+            users[message.from_user.id]["in_game"] = False
             await message.answer(
-                f'Unfortunatly yo are lose\n'
-                f'The number was {user["secret_number"]}\n'
+                f'Unfortunatly you are lose\n'
+                f'The number was {users[message.from_user.id]["secret_number"]}\n'
                 f'You can try again /start'
             )
     else:
@@ -127,7 +128,7 @@ async def the_game(message:Message):
 
 dp.message()
 async def process_other_message(message:Message):
-    if user["in_game"]:
+    if users[message.from_user.id]["in_game"]:
         await message.answer("We in the game\n Put the number from 1 t0 100")
     else:
         await message.answer("I cant understand you.\n Do you wanna /start the game?")
