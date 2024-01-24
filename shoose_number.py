@@ -8,7 +8,7 @@ BOT_TOKEN = '5164475581:AAHprXR3KKQzsZerMnIMcsigyxQCTvP6N7M'
 bot = Bot( BOT_TOKEN)
 dp = Dispatcher()
 
-ATTEMPTS = 5
+ATTEMPTS = 8
 
 
 users = {}
