@@ -3,11 +3,12 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.types import ContentType
 from aiogram import F
+import os
 
 
-BOT_TOKEN = '5164475581:AAHprXR3KKQzsZerMnIMcsigyxQCTvP6N7M'
+#BOT_TOKEN = '5164475581:AAHprXR3KKQzsZerMnIMcsigyxQCTvP6N7M'
 
-bot = Bot(token=BOT_TOKEN)
+bot = Bot(token=str(os.getenv('BOT_TOKEN')))
 dp = Dispatcher()
 
 
